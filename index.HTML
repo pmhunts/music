@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music and Video Player</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        #background-video,
+        #background-video-post {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            z-index: 1;
+            color: rgb(83, 211, 151);
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .container.show {
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        form {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #007BFF;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4aef55;
+            color: rgb(39, 120, 226);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        nav {
+            background-color: rgba(125, 227, 240, 0.8);
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        nav input {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #music-container-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: start;
+            align-items: center;
+            overflow-x: auto;
+            padding: 20px;
+            margin-top: 60px;
+            white-space: nowrap;
+            height: calc(100vh - 60px);
+        }
+
+        .music-journey {
+    flex: 0 0 200px; 
+    display: inline-block;
+    margin: 20px;
+    width: 200px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+        .music-journey img {
+            width: 100%;
+            height: 150px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .music-journey:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        #loading-spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <input type="text" id="song-search" placeholder="Search for songs...">
+    </nav>
+
+    <video id="background-video" autoplay loop muted>
+        <source src="video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div id="login-container" class="container show" style="color: #e19d1d;">
+        <h1>Login</h1>
+        <form id="login-form">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+            <button type="reset">Reset</button>
+        </form>
+        <div id="loading-spinner"></div>
+    </div>
+
+    <div id="post-login-container" class="container hidden">
+        <h1>Welcome!</h1>
+        <div id="music-container-wrapper">
+            <div class="music-journey" data-audio="song1.mp3">
+                <img src="photo1.jpg" alt="Song 1 Image">
+                <h2>Play Song 1</h2>
+                <audio id="audio-1" src="song1.mp3"></audio>
+            </div>
+            <div class="music-journey" data-audio="song2.mp3">
+                <img src="photo2.jpg" alt="Song 2 Image">
+                <h2>Play Song 2</h2>
+                <audio id="audio-2" src="song2.mp3"></audio>
+            </div>
+            <div class="music-journey" data-audio="song3.mp3">
+                <img src="photo3.jpg" alt="Song 3 Image">
+                <h2>Play Song 3</h2>
+                <audio id="audio-3" src="song3.mp3"></audio>
+            </div>
+            <div class="music-journey" data-audio="song4.mp3">
+                <img src="photo4.jpg" alt="Song 4 Image">
+                <h2>Play Song 4</h2>
+                <audio id="audio-4" src="song4.mp3"></audio>
+            </div>
+            <div class="music-journey" data-audio="song5.mp3">
+                <img src="photo5.jpg" alt="Song 5 Image">
+                <h2>Play Song 5</h2>
+                <audio id="audio-5" src="song5.mp3"></audio>
+            </div>
+            <div class="music-journey" data-audio="song6.mp3">
+                <img src="photo6.jpg" alt="Song 6 Image">
+                <h2>Play Song 6</h2>
+                <audio id="audio-6" src="song6.mp3"></audio>
+            </div>
+            <div class="music-journey" data-audio="song7.mp3">
+                <img src="photo7.jpg" alt="Song 7 Image">
+                <h2>Play Song 7</h2>
+                <audio id="audio-7" src="song7.mp3"></audio>
+            </div>
+            <div class="music-journey" data-audio="song8.mp3">
+                <img src="photo8.jpg" alt="Song 8 Image">
+                <h2>Play Song 8</h2>
+                <audio id="audio-8" src="song8.mp3"></audio>
+            </div>
+            <div class="music-journey" data-audio="song9.mp3">
+                <img src="photo9.jpg" alt="Song 9 Image">
+                <h2>Play Song 9</h2>
+                <audio id="audio-9" src="song9.mp3"></audio>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const spinner = document.getElementById('loading-spinner');
+            spinner.style.display = 'block';
+
+            setTimeout(function () {
+                spinner.style.display = 'none';
+                if (username === 'p' && password === 'p00') {
+                    document.getElementById('login-container').classList.remove('show');
+                    document.getElementById('background-video').classList.add('hidden');
+
+                    let postLoginVideo = document.createElement('video');
+                    postLoginVideo.id = 'background-video-post';
+                    postLoginVideo.autoplay = true;
+                    postLoginVideo.loop = true;
+                    postLoginVideo.muted = true;
+                    postLoginVideo.innerHTML = '<source src="phone.mp4" type="video/mp4">';
+                    document.body.appendChild(postLoginVideo);
+
+                    setTimeout(() => {
+                        document.getElementById('login-container').classList.add('hidden');
+                        document.getElementById('post-login-container').classList.remove('hidden');
+                        document.getElementById('post-login-container').classList.add('show');
+                    }, 500);
+                } else {
+                    alert("Invalid username or password!");
+                }
+            }, 1500);
+        });
+
+        document.querySelectorAll('.music-journey').forEach(container => {
+    container.addEventListener('click', function () {
+        const audioElement = this.querySelector('audio');
+        const titleElement = this.querySelector('h2');
+        
+        if (audioElement.paused) {
+            document.querySelectorAll('.music-journey audio').forEach(audio => {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.parentElement.querySelector('h2').innerText = 'Play ' + audio.parentElement.querySelector('h2').innerText.slice(6);
+            });
+            
+            audioElement.play();
+            titleElement.innerText = 'Pause ' + titleElement.innerText.slice(5);
+        } else {
+            audioElement.pause();
+            titleElement.innerText = 'Play ' + titleElement.innerText.slice(6);
+        }
+    });
+});
+    </script>
+</body>
+</html>
